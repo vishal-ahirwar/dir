@@ -1,0 +1,11 @@
+{
+    "build": "Thu Feb 13 07:37:55 2025",
+    "cmakeArgs": [
+        "-DBUILD_SHARED_LIBS=OFF",
+        "-DCMAKE_CXX_COMPILER=clang++",
+        "-DCMAKE_C_COMPILER=clang",
+        "-Dfmt_DIR=external\\fmt/install/lib/cmake/fmt"
+    ],
+    "developerName": "None",
+    "projectName": "dir"
+}
