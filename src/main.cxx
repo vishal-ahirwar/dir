@@ -59,15 +59,21 @@ int main(int argc, char *argv[])
     std::vector<Info> dirs{};
     getAllDirsRecursive(argv[1], dirs, -1);
     // getAllDirs(argv[1], dirs);
-    for (const auto &dir : dirs)
+    for (auto &dir : dirs)
     {
+        std::string tabs{};
+        while (dir._depth > 0)
+        {
+            tabs += "-----";
+            dir._depth -= 1;
+        }
         if (dir._is_dir)
         {
-            fmt::print(fmt::emphasis::bold | fmt::fg(fmt::color::green), "Depth : {} ,Path : {}\nName : {}\n", dir._depth, dir._path, dir._file_name);
+            fmt::print(fmt::emphasis::bold | fmt::fg(fmt::color::yellow), "{} Name : {}\n{} Path : {}\n", tabs, dir._file_name, tabs,dir._path);
         }
         else
         {
-            fmt::print(fmt::emphasis::faint | fmt::fg(fmt::color::white), "Depth : {}, Path : {}\nName : {}\n", dir._depth, dir._path, dir._file_name);
+            fmt::print(fmt::emphasis::faint | fmt::fg(fmt::color::ghost_white), "{} Name : {}\n{} Path : {}\n", tabs, dir._file_name, tabs,dir._path);
         }
     }
     return 0;
