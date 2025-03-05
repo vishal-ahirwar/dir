@@ -17,8 +17,29 @@ struct Info
     bool _is_dir{};
     std::string _path{};
 };
-void printAllDirsRecursive(const fs::path &current_path) {
-
+void print(std::vector<Info> &dirs, bool bprint_fullpath)
+{
+    for (auto &dir : dirs)
+    {
+        std::string tabs{};
+        while (dir._depth > 0)
+        {
+            tabs += "-----";
+            dir._depth -= 1;
+        }
+        if (dir._is_dir)
+        {
+            fmt::print(fmt::emphasis::bold | fmt::fg(fmt::color::yellow), "{}{}\n", tabs, dir._file_name);
+        }
+        else
+        {
+            fmt::print(fmt::emphasis::faint | fmt::fg(fmt::color::ghost_white), "{}{}\n", tabs, dir._file_name);
+        }
+        if (bprint_fullpath)
+        {
+            fmt::print("{}{}\n", tabs, dir._path);  
+        };
+    }
 };
 
 void getAllDirsRecursive(const fs::path &current_path, std::vector<Info> &info, int depth = 0)
@@ -40,11 +61,11 @@ void getAllDirsRecursive(const fs::path &current_path, std::vector<Info> &info, 
         }
     }
 };
-void getAllDirs(const std::string &path, std::vector<Info> &dirs)
+void getAllDirs(const fs::path &path, std::vector<Info> &dirs)
 {
     if (!fs::exists(path))
         return;
-    for (const auto &next : fs::recursive_directory_iterator(path))
+    for (const auto &next : fs::directory_iterator(path))
     {
         dirs.push_back(Info{._depth = 0, ._file_name = next.path().filename().string(), ._is_dir = next.is_directory(), ._path = fs::absolute(next.path().lexically_normal()).string()});
     };
@@ -53,28 +74,16 @@ int main(int argc, char *argv[])
 {
     if (!(argc >= 2))
     {
-        fmt::print(fmt::fg(fmt::color::rebecca_purple), "[error] : No path provided by user!\n");
+        std::vector<Info> dirs{};
+        getAllDirs(fs::current_path(), dirs);
+        print(dirs, false);
         return 0;
     }
-    std::vector<Info> dirs{};
-    getAllDirsRecursive(argv[1], dirs, -1);
-    // getAllDirs(argv[1], dirs);
-    for (auto &dir : dirs)
+    if (argv[1] == std::string("-r"))
     {
-        std::string tabs{};
-        while (dir._depth > 0)
-        {
-            tabs += "-----";
-            dir._depth -= 1;
-        }
-        if (dir._is_dir)
-        {
-            fmt::print(fmt::emphasis::bold | fmt::fg(fmt::color::yellow), "{} Name : {}\n{} Path : {}\n", tabs, dir._file_name, tabs,dir._path);
-        }
-        else
-        {
-            fmt::print(fmt::emphasis::faint | fmt::fg(fmt::color::ghost_white), "{} Name : {}\n{} Path : {}\n", tabs, dir._file_name, tabs,dir._path);
-        }
+        std::vector<Info> dirs{};
+        getAllDirsRecursive(fs::current_path(), dirs, -1);
+        print(dirs, false);
     }
     return 0;
 };
